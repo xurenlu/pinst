@@ -1,0 +1,254 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import getopt, sys,os,time
+sys.path.append("./")
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))+"/lib/")
+import nvwa.fccpm
+import nvwa.pcolor as pcolor
+import nvwa.log as log
+import glob
+
+def usage(argv,sub_command="all"):
+    '''print helps'''
+    helps = {
+        "create":"create [config_file]",
+        "install":"install [package_file] [package] [version]",
+        "list":"list all packages installed in the system",
+        "reset_db":"if you are installing fccpm first,use this to create a database file",
+        "run_service":"try to start all supervise services for you",
+        "files":"show files of specific package",
+        "cron":"show crontab content of speicific package",
+        "cronon":"turn on the crontab for specific package",
+        "cronoff":"trun off the crontab for specific package",
+        "check":"validate the specific config file"
+
+    }
+    if sub_command == "all":
+        for topic in helps:
+            print topic,":",helps[topic]
+    else:
+        try:
+            print sub_command,":",argv[0]," ",helps[sub_command]
+        except Exception,e:
+            print "command ",sub_command," not exists"
+
+    sys.exit()
+
+
+def try_files(argv):
+    ''' try to list packages files '''
+    package_name = argv[1]
+    package = nvwa.fccpm.get_current_version(package_name)
+    if package == None:
+        pcolor.red("package %s not exists" % package_name)
+    package_version = package[1]
+    print "files of ",package_name,"-",package_version
+    all_paths =  nvwa.fccpm.list_files(package_name,package_version)
+    for directory in all_paths["dirs"]:
+        print directory
+    print ""
+    for file in all_paths["files"]:
+        print file
+
+
+def try_create(argv):
+    ''' try to create the package base on your specific config file'''
+    if len(argv) < 2 :
+        usage(argv,"create")
+    config_file = argv[1]
+    if nvwa.fccpm.check_config_file(config_file):
+        try:
+            created = nvwa.fccpm.create(config_file)
+            if created :
+                pcolor.green("create succeed!")
+            else:
+                pcolor.yellow("created failed!")
+        except:
+            pass
+    else:
+        pcolor.red("create aborted because of  config file's error")
+
+def try_install(argv):
+    '''try to install the package into the system'''
+    if len(argv) < 2 :
+        usage("install")
+
+    #check if there is a lock file
+    lock_file = os.path.dirname( os.path.realpath(__file__) ) + "/run/fccpm.lock"
+    if os.path.exists(lock_file) :
+        pcolor.red("We found a lock file of fccpm.\nCheck if another fccpm is running.\nIf there's is no fccpm running,remove the "+lock_file+" and retry again")
+        sys.exit()
+    f=open(lock_file,"w+")
+    f.write("%d" % os.getpid())
+    f.close()
+    try:
+        package_file = argv[1]
+        package_info = nvwa.fccpm.guess_version(package_file)
+        nvwa.fccpm.install_package(package_file,package_info[0],package_info[1])
+        pcolor.green("FILES copied,now init the supervise")
+        nvwa.fccpm.init_supervise(package_info[0],package_info[1])
+        pcolor.green("services inited")
+        nvwa.fccpm.rebuild_cron()
+        pcolor.green("crontab rebuilded")
+    finally:
+        os.remove(lock_file)
+    log.succ("installed")
+
+def try_uninstall(argv):
+    """show crontabs of package """
+    if len(argv) <=1:
+        print "You should specific the package name and version"
+        return
+    package_name = argv[1]
+    package = nvwa.fccpm.get_current_version(package_name)
+    if package == None:
+        pcolor.red("package %s not exists" % package_name)
+        sys.exit(0)
+    package_version = package[1]
+    nvwa.fccpm.uninstall_package(package_name,package_version)
+
+def try_reset_db(argv):
+    pcolor.red("This is a dangerous operation")
+    pcolor.red("Do you know the serious?")
+    while True:
+        y_n=raw_input("type \"yes\" to continue,type \"no\" to exit:\n")
+        if y_n=="yes":
+            break
+        elif y_n == "no":
+            sys.exit()
+        else:
+            print "That 's invalid answer"
+
+    #now,we try to init db for you
+    nvwa.fccpm.init_db()
+
+def try_to_list(argv):
+    '''list pacakges'''
+    if len(argv)>1:
+        #list files of a specific packages
+        rows = nvwa.fccpm.list_packges(argv[1])
+    else:        
+        print argv
+        rows = nvwa.fccpm.list_packges()
+    for row in rows:
+        if row[2]=="normal":
+            pcolor.green("%s-%s:[actived:%s][cron-status:%s]" % (row[0].strip(),row[1].strip(),row[2].strip(),row[3].strip() ) )
+        else:
+            pcolor.red("%s-%s:[actived:%s][cron-status:%s]" % (row[0].strip(),row[1].strip(),row[2].strip(),row[3].strip()) )
+
+def turn_cron_off(argv):
+    package_name = argv[1]
+    nvwa.fccpm.turn_off_cron_package(package_name)
+
+def turn_cron_on(argv):
+    package_name = argv[1]
+    nvwa.fccpm.turn_on_cron_package(package_name)
+
+def show_cron_tab(argv):
+    """show crontabs of package """
+    package_name = argv[1]
+    package = nvwa.fccpm.get_current_version(package_name)
+    if package == None:
+        pcolor.red("package %s not exists" % package_name)
+    package_version = package[1]
+    if len(argv)>1:
+        lines =  nvwa.fccpm.cron_content_of_package(package_name,package_version)
+        for line in lines:
+            print line,":",lines[line]
+    else:
+        print "You should specific the package name and version"
+        return
+
+def try_run_services(argv):
+    """show crontabs of package """
+    package_name = argv[1]
+    package = nvwa.fccpm.get_current_version(package_name)
+    if package == None:
+        pcolor.red("package %s not exists" % package_name)
+    package_version = package[1]
+    if len(argv)>1:
+        nvwa.fccpm.run_supervise(package_name,package_version)
+        pcolor.green("serices started")
+    else:
+        print "You should specific the package name and version"
+        return
+    
+    
+def try_start_all(argv):
+    ''' try to start all the supervise services for U.'''
+    try:
+        nvwa.fccpm.run_all_supervises()
+    except Exception,e:
+        pcolor.red(e)
+
+def check_config(argv):
+    '''check config file'''
+    try:
+        file = argv[1]
+        if nvwa.fccpm.check_config_file(file):
+            pcolor.green("Check success!")
+
+    except Exception,e:
+        pcolor.red(e)
+
+def try_set_env(argv):
+    if len(argv) == 4:
+        log.info("get the enviroment variables")
+        nvwa.fccpm.set_env_variable(argv[1],argv[2],argv[3])
+    else:
+        pass
+
+def main():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "ho:v", ["help", "output="])
+    except getopt.GetoptError, err:
+        # print help information and exit:
+        print str(err) # will print something like "option -a not recognized"
+        usage(args,"all")
+        sys.exit(2)
+    output = None
+    verbose = False
+    for o, a in opts:
+        if o == "-v":
+            verbose = True
+        elif o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif o in ("-o", "--output"):
+            output = a
+        else:
+            assert False, "unhandled option"
+    # ...
+    if len(args) <= 0:
+        usage(args,"all")
+        sys.exit()
+
+    command = args[0]
+    if command == "create":
+        try_create(args)
+    if command == "install":
+        try_install(args)
+    if command == "uninstall":
+        try_uninstall(args)
+    if command == "reset_db":
+        try_reset_db(args)
+    if command == "list":
+        try_to_list(args)
+    if command == "start_all":
+        try_start_all(args)
+    if command == "run_service":
+        try_run_services(args)
+    if command == "files":
+        try_files(args)
+    if command == "cron":
+        show_cron_tab(args)
+    if command == "cronoff":
+        turn_cron_off(args)
+    if command == "cronon":
+        turn_cron_on(args)
+    if command == "check":
+        check_config(args)
+    if command == "set":
+        try_set_env(args)
+if __name__ == "__main__":
+    main()
