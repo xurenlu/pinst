@@ -74,6 +74,10 @@ def try_install(argv):
         usage("install")
 
     #check if there is a lock file
+    try:
+        os.makedirs(os.path.dirname(os.path.realpath(__file__) )  + "/run/" )
+    except:
+        pass
     lock_file = os.path.dirname( os.path.realpath(__file__) ) + "/run/fccpm.lock"
     if os.path.exists(lock_file) :
         pcolor.red("We found a lock file of fccpm.\nCheck if another fccpm is running.\nIf there's is no fccpm running,remove the "+lock_file+" and retry again")

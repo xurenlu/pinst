@@ -40,7 +40,8 @@ DIRS = [
 ]
 FILES =[
     {
-        "from":glob.glob("./bin/*.*"),
+        "from":"./pinst",
+        #glob.glob("./bin/*.*"),
         "to":PREFIX+"bin/",
         "chown":"root",
         "chmod":0755,
@@ -87,9 +88,9 @@ CRONTABS = [
 
     {
         "desc":"check the shop categories",
-        "user":"vagrant",
+        "user":"renlu",
         "rule":"* 23,1,3,5 * * * ",
-        "command":"/home/x/bin/php /home/x/bin/fccpm.py",
+        "command":"/home/x/bin/php /home/x/bin/pinst",
         "mail_to":"demo@qq.com"
     }
 ]
