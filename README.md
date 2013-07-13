@@ -6,8 +6,10 @@ Pinst package management tool.
 
 **Version**:1.0.0
 
-#做好用的git管理软件…#
-
+#简单的线上部署管理软件…#
+    Pinst初衷是一个简单易用的包管理软件。可以用来打包，发布，安装pinst包。整个软件用python写成.
+    功能简介:
+        根据配置文件将一系列文件打包成一个tar文件。可以在配置文件里指定拷贝哪些文件，创建哪些目录，哪些文件是配置文件，以及由supervisord控制的service。
 
 ##几条原则##
 
