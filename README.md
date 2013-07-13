@@ -1,4 +1,4 @@
-Nvwa package management tool.
+Pinst package management tool.
 
 **Author**:<renlu.xu@gmail.com>
 
@@ -18,11 +18,22 @@ Nvwa package management tool.
 TODO:
 
 >导入某用户的crontab到一个metapackage metapackage的设计;
+>
 >可以在安装完后修改指定的配置文件的某一项的值;
->指定某个文件是配置文件.配置文件在安装时默认不被覆盖;
-自动化命令:在安装包之前,安装之后,更新之前,更新之后运行的命令.
-    pre_install:
-    post_install:
-    pre_update:
-    post_update:
-编译python到二进制文件
+> 指定某个文件是配置文件.配置文件在安装时默认不被覆盖;
+> 自动化命令:在安装包之前,安装之后,更新之前,更新之后运行的命令.
+>    pre_install:
+>    
+>    post_install:
+>    
+>    pre_update:
+>    
+>    post_update: 
+>   
+
+
+已知Bug:
+
+1. [***已经解决***]pinst cronon 不管用。
+
+2. 
