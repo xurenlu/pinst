@@ -13,14 +13,17 @@ def usage(argv,sub_command="all"):
     helps = {
         "create":"create [config_file]",
         "install":"install [package_file] [package] [version]",
+        "uninstall":"uninstall [package]",
         "list":"list all packages installed in the system",
         "reset_db":"if you are installing fccpm first,use this to create a database file",
         "run_service":"try to start all supervise services for you",
+        "start_all":"start all packages' services",
         "files":"show files of specific package",
         "cron":"show crontab content of speicific package",
         "cronon":"turn on the crontab for specific package",
         "cronoff":"trun off the crontab for specific package",
-        "check":"validate the specific config file"
+        "check":"validate the specific config file",
+        "set":"set package-level enviroment variable"
 
     }
     if sub_command == "all":

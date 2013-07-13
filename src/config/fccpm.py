@@ -12,7 +12,7 @@ except Exception,e:
 PACKAGE = "fccpm"
 VERSION = "1.0.0"
 CONFIG_FILES=[
-    #"/etc/nvwa/fccpm.conf"
+    "/home/x/etc/redis.conf"
 ]
 #you can modify the content of file /etc/mysql_pass/q1.conf by:
 #daddy set q1_htdocs.mysql_host "192.168.1.192"
@@ -36,6 +36,11 @@ DIRS = [
         "path":PREFIX+"lib/",
         "chown":"root",
         "chmod":0755
+    },
+    {
+        "path":PREFIX+"etc/",
+        "chown":"root",
+        "chmod":0755
     }
 ]
 FILES =[
@@ -43,6 +48,13 @@ FILES =[
         "from":"./pinst",
         #glob.glob("./bin/*.*"),
         "to":PREFIX+"bin/",
+        "chown":"root",
+        "chmod":0755,
+        "with_sub_dir":False
+    },
+    {
+        "from":"etc/redis.conf",
+        "to":PREFIX+"etc/",
         "chown":"root",
         "chmod":0755,
         "with_sub_dir":False
