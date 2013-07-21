@@ -650,7 +650,7 @@ def set_env_variable(package_name,var_name,var_value):
         original_file = PREFIX+"/packages/"+package_name+"/"+version+"/"+package_name+"-"+version+"/" + file
         original_file = original_file.replace("//","/")
         sed_file(original_file,file,var_name,var_value)
-        echo "file modifyed,you 'd better check the content:"+ file 
+        print  "file modifyed,you 'd better check the content:"+ file 
      
 
 if __name__ == "__main__":
