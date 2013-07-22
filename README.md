@@ -11,6 +11,41 @@ Pinst package management tool.
     功能简介:
         根据配置文件将一系列文件打包成一个tar文件。可以在配置文件里指定拷贝哪些文件，创建哪些目录，哪些文件是配置文件，以及由supervisord控制的service。
 
+##使用方法 ##
+
+#### 打包 ####
+
+>    1 创建一个配置文件(参照src/config/fccpm.py)
+
+>    2 创建模块:pinst create ./src/config/fccpm.py 
+
+>    3 安装生成的包 pinst install ./dist/fccpm-1.0.0.tar.gz
+
+#### 查看已经安装的包 ####
+
+1 **查看已经安装过的所有包**
+
+>pinst list
+
+2 **列出某个包的所有文件** 
+
+>pinst files fccpm
+
+#### 修改配置文件 ####
+
+> sudo pinst set fccpm daemon "run_as_daemon"
+
+#### 开启、关闭某个包里的crontab ####
+
+> pinst cronon fccpm
+> pinst cronoff fccpm
+
+#### 打开某个服务的service ####
+> pinst run_service fccpm
+
+
+
+
 ##几条原则##
 
 1. 当with_sub_dir是True时,FILES["from"]一般应该是用find或glob命令得到的数组;
