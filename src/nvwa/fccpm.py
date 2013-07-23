@@ -32,7 +32,7 @@ def prepare_taskfile(taskfile):
     """Attempt to load the taskfile as a module.
     """
     path = os.path.dirname(taskfile)
-    taskmodulename = os.path.splitext(os.path.basename(taskfile))[0]
+    taskmodulename =  os.path.splitext(os.path.basename(taskfile))[0]
     try:
         fp, pathname, description = imp.find_module(taskmodulename, [path])
         tmp = imp.load_module(taskmodulename, fp, pathname, description)
