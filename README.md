@@ -38,11 +38,15 @@ Pinst package management tool.
 #### 开启、关闭某个包里的crontab ####
 
 > pinst cronon fccpm
+> 
 > pinst cronoff fccpm
 
 #### 打开某个服务的service ####
 > pinst run_service fccpm
 
+## 设计说明 ##
+1.crontab 是需要接管该用户所有的crontab的。所以,如果计划用pinst来接管crontab,则需要所有的crontab都使用pinst来接管。要么不用pinst管理crontab,要么全部用crontab 来接管.
+2.service 是用supervisord来管理的;实际是在supervisord里管理
 
 
 
