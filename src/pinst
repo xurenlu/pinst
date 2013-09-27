@@ -66,7 +66,8 @@ def try_create(argv):
                 pcolor.green("create succeed!")
             else:
                 pcolor.yellow("created failed!")
-        except:
+        except Exception,e:
+            print "exception",e
             pass
     else:
         pcolor.red("create aborted because of  config file's error")
@@ -79,7 +80,8 @@ def try_install(argv):
     #check if there is a lock file
     try:
         os.makedirs(os.path.dirname(os.path.realpath(__file__) )  + "/run/" )
-    except:
+    except Exception,e:
+        print "exception ,",e
         pass
     lock_file = os.path.dirname( os.path.realpath(__file__) ) + "/run/fccpm.lock"
     if os.path.exists(lock_file) :

@@ -472,7 +472,10 @@ def install_package(gzfile,package,version):
                     if fl["to"].endswith("/"):
                         _copy("."+fl["to"]+os.path.basename(ff),fl["to"]+os.path.basename(ff),False,fl["chown"],fl["chmod"])
                     else:
-                        _copy("."+fl["to"]+os.path.basename(ff),fl["to"],False,fl["chown"],fl["chmod"])
+                        if os.path.basename(ff) == os.path.basename(fl["to"]) :
+                            _copy("."+fl["to"],fl["to"],False,fl["chown"],fl["chmod"])
+                        else:
+                            _copy("."+fl["to"]+os.path.basename(ff),fl["to"],False,fl["chown"],fl["chmod"])
             except Exception,e:
                 print e
                 pass
@@ -582,6 +585,9 @@ def check_config_file(config_file):
     mod_fields = ["path","chown","chmod","option"]
     service_fields = ["name","desc","command","user","log"]
     cron_fields = ["rule","desc","mail_to","user","command"]
+    if k.PACKAGE.find("-")>-1 :
+        log.error("PACKAGE CONTAINS ILLEGAL CHAR:'-'")
+        return False
     for i in dir_fields:
         for item in k.DIRS:
             if not item.has_key(i):

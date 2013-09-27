@@ -45,8 +45,9 @@ Pinst package management tool.
 > pinst run_service fccpm
 
 ## 设计说明 ##
-1.crontab 是需要接管该用户所有的crontab的。所以,如果计划用pinst来接管crontab,则需要所有的crontab都使用pinst来接管。要么不用pinst管理crontab,要么全部用crontab 来接管.
-2.service 是用supervisord来管理的;实际是在supervisord里管理
+1. crontab 是需要接管该用户所有的crontab的。所以,如果计划用pinst来接管crontab,则需要所有的crontab都使用pinst来接管。要么不用pinst管理crontab,要么全部用crontab 来接管.
+
+2. sservice 是用supervisord来管理的;实际是在supervisord里管理
 
 
 
@@ -57,7 +58,9 @@ Pinst package management tool.
 1. 如果不知道怎么设置配置文件,可以参照 /home/x/packages/fccpm/1.0.0/fccpm-1.0.0.py 来配置;具体位置可能随版本而变化.
 
 TODO:
-
+> dist 服务器;
+> 远程安装的支持(走ssh命令)
+> 
 >导入某用户的crontab到一个metapackage metapackage的设计;
 >
 >可以在安装完后修改指定的配置文件的某一项的值;
@@ -77,4 +80,18 @@ TODO:
 
 1. [***已经解决***]pinst cronon 不管用。
 
-2. 
+2. 包的名字不能带有"-" [fixed at 20130927]
+3.类似这种配置会出错,出错
+FILES =[
+{
+    "from":glob.glob("./memcache.php"),
+        "to":PREFIX+"/memcache.php",
+        "chown":"admin",
+        "chmod":0755,
+        "with_sub_dir":False
+}
+]
+
+出错原因:glob.glob返回的是数组,而"to"指定了文件名;导致实际生成的命令是:
+cp ./home/admin/web/htdocs/perform.admin.search.taobao.com//memcache.phpmemcache.php /home/admin/web/htdocs/perform.admin.search.taobao.com//memcache.php
+
