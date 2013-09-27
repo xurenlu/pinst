@@ -93,5 +93,5 @@ FILES =[
 ]
 
 出错原因:glob.glob返回的是数组,而"to"指定了文件名;导致实际生成的命令是:
-cp ./home/admin/web/htdocs/perform.admin.search.taobao.com//memcache.phpmemcache.php /home/admin/web/htdocs/perform.admin.search.taobao.com//memcache.php
+cp ./home/x/web/htdocs/perform./memcache.phpmemcache.php /home/x/web/htdocs/perform//memcache.php
 
